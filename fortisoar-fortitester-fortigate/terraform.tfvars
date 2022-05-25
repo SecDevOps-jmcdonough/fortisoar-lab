@@ -1,4 +1,4 @@
-resource_group_name     = "student01_fortisoar_fortitester_fortigate"
+resource_group_name     = "_fortisoar_fortitester_fortigate"
 resource_group_location = "eastus"
 
 virtual_network_name          = "vnet_security"
