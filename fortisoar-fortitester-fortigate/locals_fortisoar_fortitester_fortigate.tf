@@ -8,19 +8,19 @@ locals {
   }
 
   public_ips = {
-    "pip_fsoar" = {
+    "pip_fsr" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name              = "pip_fsoar"
+      name              = "pip_fsr"
       allocation_method = "Static"
       sku               = "Standard"
     }
-    "pip_ftest" = {
+    "pip_faz" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name              = "pip_ftest"
+      name              = "pip_faz"
       allocation_method = "Static"
       sku               = "Standard"
     }
@@ -45,27 +45,6 @@ locals {
   }
 
   subnets = {
-    "fortitester_mgmt" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-
-      name             = "fortitester_mgmt"
-      vnet_name        = var.virtual_network_name
-      address_prefixes = [cidrsubnet(module.module_azurerm_virtual_network[var.virtual_network_name].virtual_network.address_space[0], 8, 0)]
-    }
-    "fortitester_traffic_1" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-
-      name             = "fortitester_traffic_1"
-      vnet_name        = var.virtual_network_name
-      address_prefixes = [cidrsubnet(module.module_azurerm_virtual_network[var.virtual_network_name].virtual_network.address_space[0], 8, 1)]
-    }
-    "fortitester_traffic_2" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-
-      name             = "fortitester_traffic_2"
-      vnet_name        = var.virtual_network_name
-      address_prefixes = [cidrsubnet(module.module_azurerm_virtual_network[var.virtual_network_name].virtual_network.address_space[0], 8, 2)]
-    }
     "utility" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
 
@@ -97,11 +76,11 @@ locals {
   }
 
   network_interfaces = {
-    "nic_fortigate_1_1" = {
+    "nic_fgt_1_1" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name                          = "nic_fortigate_1_1"
+      name                          = "nic_fgt_1_1"
       enable_ip_forwarding          = true
       enable_accelerated_networking = true
       ip_configurations = [
@@ -114,11 +93,11 @@ locals {
         }
       ]
     }
-    "nic_fortigate_1_2" = {
+    "nic_fgt_1_2" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name                          = "nic_fortigate_1_2"
+      name                          = "nic_fgt_1_2"
       enable_ip_forwarding          = true
       enable_accelerated_networking = true
       ip_configurations = [
@@ -131,62 +110,11 @@ locals {
         }
       ]
     }
-    "nic_fortitester_1" = {
+    "nic_fsr_1" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name                          = "nic_fortitester_1"
-      enable_ip_forwarding          = true
-      enable_accelerated_networking = true
-      ip_configurations = [
-        {
-          name                          = "ipconfig1"
-          subnet_id                     = module.module_azurerm_subnet["fortitester_mgmt"].subnet.id
-          private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost(module.module_azurerm_subnet["fortitester_mgmt"].subnet.address_prefixes[0], 4)
-          public_ip_address_id          = module.module_azurerm_public_ip["pip_ftest"].public_ip.id
-        }
-      ]
-    }
-    "nic_fortitester_2" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
-
-      name                          = "nic_fortitester_2"
-      enable_ip_forwarding          = true
-      enable_accelerated_networking = true
-      ip_configurations = [
-        {
-          name                          = "ipconfig1"
-          subnet_id                     = module.module_azurerm_subnet["fortitester_traffic_1"].subnet.id
-          private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost(module.module_azurerm_subnet["fortitester_traffic_1"].subnet.address_prefixes[0], 4)
-          public_ip_address_id          = null
-        }
-      ]
-    }
-    "nic_fortitester_3" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
-
-      name                          = "nic_fortitester_3"
-      enable_ip_forwarding          = true
-      enable_accelerated_networking = true
-      ip_configurations = [
-        {
-          name                          = "ipconfig1"
-          subnet_id                     = module.module_azurerm_subnet["fortitester_traffic_2"].subnet.id
-          private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost(module.module_azurerm_subnet["fortitester_traffic_2"].subnet.address_prefixes[0], 4)
-          public_ip_address_id          = null
-        }
-      ]
-    }
-    "nic_fortisoar_1" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
-
-      name                          = "nic_fortisoar_1"
+      name                          = "nic_fsr_1"
       enable_ip_forwarding          = true
       enable_accelerated_networking = true
       ip_configurations = [
@@ -195,7 +123,7 @@ locals {
           subnet_id                     = module.module_azurerm_subnet["utility"].subnet.id
           private_ip_address_allocation = "Static"
           private_ip_address            = cidrhost(module.module_azurerm_subnet["utility"].subnet.address_prefixes[0], 4)
-          public_ip_address_id          = module.module_azurerm_public_ip["pip_fsoar"].public_ip.id
+          public_ip_address_id          = module.module_azurerm_public_ip["pip_fsr"].public_ip.id
         }
       ]
     }
@@ -216,7 +144,7 @@ locals {
 
       name                   = "r_default"
       address_prefix         = "0.0.0.0/0"
-      next_hop_in_ip_address = module.module_azurerm_network_interface["nic_fortigate_1_2"].network_interface.private_ip_address
+      next_hop_in_ip_address = module.module_azurerm_network_interface["nic_fgt_1_2"].network_interface.private_ip_address
       next_hop_type          = "VirtualAppliance"
       route_table_name       = module.module_azurerm_route_table["rt_protected"].route_table.name
     }
@@ -240,11 +168,11 @@ locals {
   # storage account must be globally unique
   # capital letters, dashes, uderscores, etc. are not allowed in storage account names
   storage_accounts = {
-    "sasoar" = {
+    "safsr" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name                     = format("sasoar%s", "${random_id.id["storage_account_random_id"].hex}")
+      name                     = format("safsr%s", "${random_id.id["storage_account_random_id"].hex}")
       account_replication_type = "LRS"
       account_tier             = "Standard"
     }
@@ -295,18 +223,6 @@ locals {
       subnet_id                 = module.module_azurerm_subnet["utility"].subnet.id
       network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
     }
-    "protected_fortitester_mgmt" = {
-      subnet_id                 = module.module_azurerm_subnet["fortitester_mgmt"].subnet.id
-      network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
-    }
-    "protected_fortitester_traffic_1" = {
-      subnet_id                 = module.module_azurerm_subnet["fortitester_traffic_1"].subnet.id
-      network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
-    }
-    "protected_fortitester_traffic_2" = {
-      subnet_id                 = module.module_azurerm_subnet["fortitester_traffic_2"].subnet.id
-      network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
-    }
     "protected_external" = {
       subnet_id                 = module.module_azurerm_subnet["external"].subnet.id
       network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
@@ -325,13 +241,6 @@ locals {
       version   = var.fortigate_ver
       vm_size   = var.fortigate_size
     }
-    "fortitester" = {
-      publisher = "fortinet"
-      offer     = var.fortitester_offer
-      sku       = var.fortitester_sku
-      version   = var.fortitester_ver
-      vm_size   = var.fortitester_size
-    }
   }
 
   vm_linux_image = {
@@ -344,29 +253,29 @@ locals {
   }
 
   linux_virtual_machines = {
-    "vm_fortisoar" = {
+    "vm_fsr" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name = "vm-fortisoar"
+      name = "vm-fsr"
       size = "Standard_D8s_v3"
 
       availability_set_id   = null
-      network_interface_ids = [for nic in ["nic_fortisoar_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
+      network_interface_ids = [for nic in ["nic_fsr_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
 
       admin_username = var.username
       admin_password = var.password
-      computer_name  = "vm-fortisoar"
+      computer_name  = "vm-fsr"
 
       disable_password_authentication = false
 
-      os_disk_name                 = "disk-vm-fortisoar_OS"
+      os_disk_name                 = "disk-vm-fsr_OS"
       os_disk_caching              = "ReadWrite"
       os_disk_storage_account_type = "Standard_LRS"
 
       allow_extension_operations = true
 
-      storage_account_uri = module.module_azurerm_storage_account["sasoar"].storage_account.primary_blob_endpoint
+      storage_account_uri = module.module_azurerm_storage_account["safsr"].storage_account.primary_blob_endpoint
 
       identity = "SystemAssigned"
 
@@ -375,7 +284,7 @@ locals {
       source_image_reference_sku       = local.vm_linux_image["OpenLogic"].sku
       source_image_reference_version   = local.vm_linux_image["OpenLogic"].version
 
-      custom_data = base64encode(templatefile("./fortisoar.tpl", {}))
+      custom_data = base64encode(templatefile("./fsr.tpl", {}))
 
       zone = null
 
@@ -384,12 +293,12 @@ locals {
       connection_type     = "ssh"
       connection_user     = var.username
       connection_password = var.password
-      connection_host     = module.module_azurerm_public_ip["pip_fsoar"].public_ip.ip_address
+      connection_host     = module.module_azurerm_public_ip["pip_fsr"].public_ip.ip_address
     }
   }
 
   virtual_machines = {
-    /*"vm_fgt" = {
+    "vm_fgt" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
@@ -403,8 +312,8 @@ locals {
       delete_os_disk_on_termination    = true
       delete_data_disks_on_termination = true
 
-      network_interface_ids        = [for nic in ["nic_fortigate_1_1", "nic_fortigate_1_2"] : module.module_azurerm_network_interface[nic].network_interface.id]
-      primary_network_interface_id = module.module_azurerm_network_interface["nic_fortigate_1_1"].network_interface.id
+      network_interface_ids        = [for nic in ["nic_fgt_1_1", "nic_fgt_1_2"] : module.module_azurerm_network_interface[nic].network_interface.id]
+      primary_network_interface_id = module.module_azurerm_network_interface["nic_fgt_1_1"].network_interface.id
 
       public_ip_address = module.module_azurerm_public_ip["pip_fgt"].public_ip.ip_address
 
@@ -425,7 +334,7 @@ locals {
       os_profile_linux_config_disable_password_authentication = false
 
       boot_diagnostics_enabled     = true
-      boot_diagnostics_storage_uri = module.module_azurerm_storage_account["sasoar"].storage_account.primary_blob_endpoint
+      boot_diagnostics_storage_uri = module.module_azurerm_storage_account["safsr"].storage_account.primary_blob_endpoint
 
       storage_os_disk_name              = "disk_vm_fgt_os"
       storage_os_disk_caching           = "ReadWrite"
@@ -457,76 +366,20 @@ locals {
           vnet_address_prefix     = module.module_azurerm_virtual_network["vnet_security"].virtual_network.address_space[0]
           external_subnet_gateway = cidrhost(module.module_azurerm_subnet["external"].subnet.address_prefixes[0], 1)
           internal_subnet_gateway = cidrhost(module.module_azurerm_subnet["internal"].subnet.address_prefixes[0], 1)
-          port1_ip                = module.module_azurerm_network_interface["nic_fortigate_1_1"].network_interface.private_ip_address
+          port1_ip                = module.module_azurerm_network_interface["nic_fgt_1_1"].network_interface.private_ip_address
           port1_netmask           = cidrnetmask(module.module_azurerm_subnet["external"].subnet.address_prefixes[0])
-          port2_ip                = module.module_azurerm_network_interface["nic_fortigate_1_2"].network_interface.private_ip_address
+          port2_ip                = module.module_azurerm_network_interface["nic_fgt_1_2"].network_interface.private_ip_address
           port2_netmask           = cidrnetmask(module.module_azurerm_subnet["internal"].subnet.address_prefixes[0])
         }
       )
     }
-    "vm_fortitester" = {
-      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
-      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
-
-      name              = "vm-fortitester"
-      identity_identity = "SystemAssigned"
-
-      #availability_set_id or zones can be set but not both. Both can be null
-      availability_set_id = null
-      zones               = null
-
-      delete_os_disk_on_termination    = true
-      delete_data_disks_on_termination = true
-
-      network_interface_ids        = [for nic in ["nic_fortitester_1", "nic_fortitester_2", "nic_fortitester_3"] : module.module_azurerm_network_interface[nic].network_interface.id]
-      primary_network_interface_id = module.module_azurerm_network_interface["nic_fortitester_1"].network_interface.id
-
-      public_ip_address = module.module_azurerm_public_ip["pip_ftest"].public_ip.ip_address
-
-      vm_size = local.vm_image["fortitester"].vm_size
-
-      storage_image_reference_publisher = local.vm_image["fortitester"].publisher
-      storage_image_reference_offer     = local.vm_image["fortitester"].offer
-      storage_image_reference_sku       = local.vm_image["fortitester"].sku
-      storage_image_reference_version   = local.vm_image["fortitester"].version
-
-      plan_publisher = local.vm_image["fortitester"].publisher
-      plan_product   = local.vm_image["fortitester"].offer
-      plan_name      = local.vm_image["fortitester"].sku
-
-      os_profile_admin_username = var.username
-      os_profile_admin_password = var.password
-
-      os_profile_linux_config_disable_password_authentication = false
-
-      boot_diagnostics_enabled     = true
-      boot_diagnostics_storage_uri = module.module_azurerm_storage_account["sasoar"].storage_account.primary_blob_endpoint
-
-      storage_os_disk_name              = "disk_vm_fortitester_OS"
-      storage_os_disk_caching           = "ReadWrite"
-      storage_os_disk_managed_disk_type = "Premium_LRS"
-      storage_os_disk_create_option     = "FromImage"
-
-      storage_data_disks = [
-        {
-          name              = "disk_vm_fortitester_data"
-          managed_disk_type = "Premium_LRS"
-          create_option     = "Empty"
-          disk_size_gb      = "30"
-          lun               = "0"
-        }
-      ]
-
-      # FortiGate Configuration
-      config_data = null
-    }*/
   }
 
   role_assignments = {
-    /*"vm_fgt" = {
+    "vm_fgt" = {
       scope                = module.module_azurerm_resource_group[local.resource_group_name].resource_group.id,
       role_definition_name = "Reader"
       principal_id         = module.module_azurerm_virtual_machine["vm_fgt"].virtual_machine.identity[0].principal_id
-    }*/
+    }
   }
 }

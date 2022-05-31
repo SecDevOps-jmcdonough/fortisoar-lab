@@ -1,14 +1,14 @@
 resource "null_resource" "fortisoar_deploy" {
   # Changes to any instance of the cluster requires re-provisioning
   triggers = {
-    fortisoar_id = module.module_azurerm_linux_virtual_machine["vm_fortisoar"].linux_virtual_machine.id
+    fortisoar_id = module.module_azurerm_linux_virtual_machine["vm_fsr"].linux_virtual_machine.id
   }
 
   connection {
     type     = "ssh"
     user     = var.username
     password = var.password
-    host     = module.module_azurerm_public_ip["pip_fsoar"].public_ip.ip_address
+    host     = module.module_azurerm_public_ip["pip_fsr"].public_ip.ip_address
   }
 
   provisioner "remote-exec" {
@@ -16,31 +16,9 @@ resource "null_resource" "fortisoar_deploy" {
       "sleep 120",
       "wget https://repo.fortisoar.fortinet.com/7.2.0/install-fortisoar-7.2.0.bin",
       "chmod +x install-fortisoar-7.2.0.bin",
-      #"sudo yum update",
       "export fsr_edition=enterprise",
-      #"sudo yum -y downgrade glibc glibc-common glibc-headers glibc-devel zlib",
+      "sudo yum -y downgrade glibc glibc-common glibc-headers glibc-devel zlib",
       "sudo --preserve-env=fsr_edition ./install-fortisoar-7.2.0.bin"
     ]
   }
 }
-
-# resource "null_resource" "fortisoar_configure" {
-#   # Changes to any instance of the cluster requires re-provisioning
-#   triggers = {
-#     fortisoar_id = module.module_azurerm_linux_virtual_machine["vm_fortisoar"].linux_virtual_machine.id
-#   }
-
-#   connection {
-#     type     = "ssh"
-#     user     = var.username
-#     password = var.password
-#     host     = module.module_azurerm_public_ip["pip_fsoar"].public_ip.ip_address
-#   }
-
-#   depends_on = [null_resource.fortisoar_deploy]
-
-#   provisioner "file" {
-#     content     = "test"
-#     destination = "./test.txt"
-#   }
-# }
