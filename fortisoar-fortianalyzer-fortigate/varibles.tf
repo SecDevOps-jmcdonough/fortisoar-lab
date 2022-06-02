@@ -122,3 +122,7 @@ variable "password" {
   description = "VM Password"
   default     = "123Password#@!"
 }
+
+variable "student" {
+  description = "Student ID"
+}
