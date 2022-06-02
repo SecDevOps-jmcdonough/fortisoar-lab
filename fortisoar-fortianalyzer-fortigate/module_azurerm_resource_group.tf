@@ -3,6 +3,7 @@ locals {
 }
 
 data "azurerm_resource_group" "resource_group" {
+  count = local.create_rg ? 0 : 1
   name = local.resource_group_name
 }
 

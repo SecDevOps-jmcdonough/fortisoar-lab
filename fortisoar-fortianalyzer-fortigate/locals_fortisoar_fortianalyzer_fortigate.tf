@@ -7,28 +7,30 @@ locals {
     }
   }
 
-  resource_group_data = data.azurerm_resource_group.resource_group
+  resource_group_data_name = local.create_rg ? module.module_azurerm_resource_group[0].resource_group.name : data.azurerm_resource_group.resource_group.0.name
+  resource_group_data_location = local.create_rg ? module.module_azurerm_resource_group[0].resource_group.location : data.azurerm_resource_group.resource_group.0.location
+  resource_group_data_id = local.create_rg ? module.module_azurerm_resource_group[0].resource_group.id : data.azurerm_resource_group.resource_group.0.id
 
   public_ips = {
     "pip_fsr" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name              = "pip_fsr"
       allocation_method = "Static"
       sku               = "Standard"
     }
     "pip_faz" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name              = "pip_faz"
       allocation_method = "Static"
       sku               = "Standard"
     }
     "pip_fgt" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name              = "pip_fgt"
       allocation_method = "Static"
@@ -38,8 +40,8 @@ locals {
 
   virtual_networks = {
     (var.virtual_network_name) = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name          = var.virtual_network_name
       address_space = var.virtual_network_address_space
@@ -48,28 +50,28 @@ locals {
 
   subnets = {
     "utility" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name             = "utility"
       vnet_name        = var.virtual_network_name
       address_prefixes = [cidrsubnet(module.module_azurerm_virtual_network[var.virtual_network_name].virtual_network.address_space[0], 8, 3)]
     }
     "external" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name             = "external"
       vnet_name        = var.virtual_network_name
       address_prefixes = [cidrsubnet(module.module_azurerm_virtual_network[var.virtual_network_name].virtual_network.address_space[0], 8, 4)]
     }
     "internal" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name             = "internal"
       vnet_name        = var.virtual_network_name
       address_prefixes = [cidrsubnet(module.module_azurerm_virtual_network[var.virtual_network_name].virtual_network.address_space[0], 8, 5)]
     }
     "protected" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name             = "protected"
       vnet_name        = var.virtual_network_name
@@ -79,8 +81,8 @@ locals {
 
   network_interfaces = {
     "nic_fgt_1_1" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_fgt_1_1"
       enable_ip_forwarding          = true
@@ -96,8 +98,8 @@ locals {
       ]
     }
     "nic_fgt_1_2" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_fgt_1_2"
       enable_ip_forwarding          = true
@@ -113,8 +115,8 @@ locals {
       ]
     }
     "nic_fsr_1" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_fsr_1"
       enable_ip_forwarding          = true
@@ -130,8 +132,8 @@ locals {
       ]
     }
     "nic_faz_1" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_faz_1"
       enable_ip_forwarding          = true
@@ -147,8 +149,8 @@ locals {
       ]
     }
     "nic_bpc_1" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_bpc_1"
       enable_ip_forwarding          = true
@@ -164,8 +166,8 @@ locals {
       ]
     }
     "nic_hpc_1" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_hpc_1"
       enable_ip_forwarding          = true
@@ -181,8 +183,8 @@ locals {
       ]
     }
     "nic_spc_1" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                          = "nic_spc_1"
       enable_ip_forwarding          = true
@@ -201,8 +203,8 @@ locals {
 
   route_tables = {
     "rt_protected" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name = "rt_protected"
     }
@@ -210,7 +212,7 @@ locals {
 
   routes = {
     "r_default" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name                   = "r_default"
       address_prefix         = "0.0.0.0/0"
@@ -230,7 +232,7 @@ locals {
   # used as the suffix part of the storage account name
   random_ids = {
     "storage_account_random_id" = {
-      keepers_resource_group_name = local.resource_group_data.name
+      keepers_resource_group_name = local.resource_group_data_name
       byte_length                 = 8
     }
   }
@@ -239,8 +241,8 @@ locals {
   # capital letters, dashes, uderscores, etc. are not allowed in storage account names
   storage_accounts = {
     "sautil" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name                     = format("sautil%s", "${random_id.id["storage_account_random_id"].hex}")
       account_replication_type = "LRS"
@@ -250,8 +252,8 @@ locals {
 
   network_security_groups = {
     "nsg_protected" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name = "nsg_protected"
     }
@@ -259,7 +261,7 @@ locals {
 
   network_security_rules = {
     "nsr_protected_ingress" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name                        = "nsr_protected_ingress"
       priority                    = 1001
@@ -273,7 +275,7 @@ locals {
       network_security_group_name = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.name
     },
     "nsr_protected_egress" = {
-      resource_group_name = local.resource_group_data.name
+      resource_group_name = local.resource_group_data_name
 
       name                        = "nsr_protected_egress"
       priority                    = 1002
@@ -326,8 +328,8 @@ locals {
 
   linux_virtual_machines = {
     "vm-bobby-pc" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name = "vm-bobby-pc"
       size = "Standard_DS2_v2"
@@ -363,8 +365,8 @@ locals {
       tags = null
     }
     "vm-harry-pc" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name = "vm-harry-pc"
       size = "Standard_DS2_v2"
@@ -400,8 +402,8 @@ locals {
       tags = null
     }
     "vm-sally-pc" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name = "vm-sally-pc"
       size = "Standard_DS2_v2"
@@ -440,8 +442,8 @@ locals {
 
   virtual_machines_gallery = {
     "vm_fsr" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name = "vm-fsr"
       size = "Standard_D4s_v3"
@@ -458,8 +460,8 @@ locals {
 
   virtual_machines = {
     "vm_fgt" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name              = "vm-fgt"
       identity_identity = "SystemAssigned"
@@ -533,8 +535,8 @@ locals {
       )
     }
     "vm_faz" = {
-      resource_group_name = local.resource_group_data.name
-      location            = local.resource_group_data.location
+      resource_group_name = local.resource_group_data_name
+      location            = local.resource_group_data_location
 
       name              = "vm-faz"
       identity_identity = "SystemAssigned"
@@ -592,7 +594,7 @@ locals {
 
   role_assignments = {
     "vm_fgt" = {
-      scope                = local.resource_group_data.id
+      scope                = local.resource_group_data_id
       role_definition_name = "Reader"
       principal_id         = module.module_azurerm_virtual_machine["vm_fgt"].virtual_machine.identity[0].principal_id
     }
