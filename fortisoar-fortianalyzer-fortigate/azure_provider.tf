@@ -9,7 +9,11 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 
   # There are multiple ways to authenticate
   # Check the provider docs to determine which

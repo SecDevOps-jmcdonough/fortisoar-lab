@@ -127,6 +127,74 @@ locals {
         }
       ]
     }
+    "nic_faz_1" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name                          = "nic_faz_1"
+      enable_ip_forwarding          = true
+      enable_accelerated_networking = true
+      ip_configurations = [
+        {
+          name                          = "ipconfig1"
+          subnet_id                     = module.module_azurerm_subnet["utility"].subnet.id
+          private_ip_address_allocation = "Static"
+          private_ip_address            = cidrhost(module.module_azurerm_subnet["utility"].subnet.address_prefixes[0], 5)
+          public_ip_address_id          = module.module_azurerm_public_ip["pip_faz"].public_ip.id
+        }
+      ]
+    }
+    "nic_bpc_1" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name                          = "nic_bpc_1"
+      enable_ip_forwarding          = true
+      enable_accelerated_networking = true
+      ip_configurations = [
+        {
+          name                          = "ipconfig1"
+          subnet_id                     = module.module_azurerm_subnet["protected"].subnet.id
+          private_ip_address_allocation = "Static"
+          private_ip_address            = cidrhost(module.module_azurerm_subnet["protected"].subnet.address_prefixes[0], 4)
+          public_ip_address_id          = null
+        }
+      ]
+    }
+    "nic_hpc_1" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name                          = "nic_hpc_1"
+      enable_ip_forwarding          = true
+      enable_accelerated_networking = true
+      ip_configurations = [
+        {
+          name                          = "ipconfig1"
+          subnet_id                     = module.module_azurerm_subnet["protected"].subnet.id
+          private_ip_address_allocation = "Static"
+          private_ip_address            = cidrhost(module.module_azurerm_subnet["protected"].subnet.address_prefixes[0], 5)
+          public_ip_address_id          = null
+        }
+      ]
+    }
+    "nic_spc_1" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name                          = "nic_spc_1"
+      enable_ip_forwarding          = true
+      enable_accelerated_networking = true
+      ip_configurations = [
+        {
+          name                          = "ipconfig1"
+          subnet_id                     = module.module_azurerm_subnet["protected"].subnet.id
+          private_ip_address_allocation = "Static"
+          private_ip_address            = cidrhost(module.module_azurerm_subnet["protected"].subnet.address_prefixes[0], 6)
+          public_ip_address_id          = null
+        }
+      ]
+    }
   }
 
   route_tables = {
@@ -168,11 +236,11 @@ locals {
   # storage account must be globally unique
   # capital letters, dashes, uderscores, etc. are not allowed in storage account names
   storage_accounts = {
-    "safsr" = {
+    "sautil" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name                     = format("safsr%s", "${random_id.id["storage_account_random_id"].hex}")
+      name                     = format("sautil%s", "${random_id.id["storage_account_random_id"].hex}")
       account_replication_type = "LRS"
       account_tier             = "Standard"
     }
@@ -231,6 +299,10 @@ locals {
       subnet_id                 = module.module_azurerm_subnet["internal"].subnet.id
       network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
     }
+    "protected_protected" = {
+      subnet_id                 = module.module_azurerm_subnet["protected"].subnet.id
+      network_security_group_id = module.module_azurerm_network_security_group["nsg_protected"].network_security_group.id
+    }
   }
 
   vm_image = {
@@ -238,62 +310,147 @@ locals {
       publisher = "fortinet"
       offer     = var.fortigate_offer
       sku       = var.fortigate_sku
-      version   = var.fortigate_ver
-      vm_size   = var.fortigate_size
+      version   = var.fortigate_version
+      vm_size   = var.fortigate_vm_size
     }
-  }
-
-  vm_linux_image = {
-    "OpenLogic" = {
-      publisher = "OpenLogic"
-      offer     = "CentOS"
-      sku       = "7_9-gen2"
-      version   = "latest"
+    "fortianalyzer" = {
+      publisher = "fortinet"
+      offer     = var.fortianalyzer_offer
+      sku       = var.fortianalyzer_sku
+      version   = var.fortianalyzer_version
+      vm_size   = var.fortianalyzer_vm_size
     }
   }
 
   linux_virtual_machines = {
-    "vm_fsr" = {
+    "vm-bobby-pc" = {
       resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
       location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      name = "vm-fsr"
-      size = "Standard_D8s_v3"
+      name = "vm-bobby-pc"
+      size = "Standard_DS2_v2"
 
       availability_set_id   = null
-      network_interface_ids = [for nic in ["nic_fsr_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
+      network_interface_ids = [for nic in ["nic_bpc_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
 
       admin_username = var.username
       admin_password = var.password
-      computer_name  = "vm-fsr"
+      computer_name  = "vm-bobby-pc"
 
       disable_password_authentication = false
 
-      os_disk_name                 = "disk-vm-fsr_OS"
+      os_disk_name                 = "disk-vm-bpc_os"
       os_disk_caching              = "ReadWrite"
       os_disk_storage_account_type = "Standard_LRS"
 
       allow_extension_operations = true
 
-      storage_account_uri = module.module_azurerm_storage_account["safsr"].storage_account.primary_blob_endpoint
+      storage_account_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
 
       identity = "SystemAssigned"
 
-      source_image_reference_publisher = local.vm_linux_image["OpenLogic"].publisher
-      source_image_reference_offer     = local.vm_linux_image["OpenLogic"].offer
-      source_image_reference_sku       = local.vm_linux_image["OpenLogic"].sku
-      source_image_reference_version   = local.vm_linux_image["OpenLogic"].version
+      source_image_reference_publisher = "Canonical"
+      source_image_reference_offer     = "UbuntuServer"
+      source_image_reference_sku       = "16.04-LTS"
+      source_image_reference_version   = "latest"
 
-      custom_data = base64encode(templatefile("./fsr.tpl", {}))
+      custom_data = null
 
       zone = null
 
       tags = null
+    }
+    "vm-harry-pc" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
 
-      connection_type     = "ssh"
-      connection_user     = var.username
-      connection_password = var.password
-      connection_host     = module.module_azurerm_public_ip["pip_fsr"].public_ip.ip_address
+      name = "vm-harry-pc"
+      size = "Standard_DS2_v2"
+
+      availability_set_id   = null
+      network_interface_ids = [for nic in ["nic_hpc_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
+
+      admin_username = var.username
+      admin_password = var.password
+      computer_name  = "vm-harry-pc"
+
+      disable_password_authentication = false
+
+      os_disk_name                 = "disk-vm-hpc_os"
+      os_disk_caching              = "ReadWrite"
+      os_disk_storage_account_type = "Standard_LRS"
+
+      allow_extension_operations = true
+
+      storage_account_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
+
+      identity = "SystemAssigned"
+
+      source_image_reference_publisher = "Canonical"
+      source_image_reference_offer     = "UbuntuServer"
+      source_image_reference_sku       = "16.04-LTS"
+      source_image_reference_version   = "latest"
+
+      custom_data = null
+
+      zone = null
+
+      tags = null
+    }
+    "vm-sally-pc" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name = "vm-sally-pc"
+      size = "Standard_DS2_v2"
+
+      availability_set_id   = null
+      network_interface_ids = [for nic in ["nic_spc_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
+
+      admin_username = var.username
+      admin_password = var.password
+      computer_name  = "vm-sally-pc"
+
+      disable_password_authentication = false
+
+      os_disk_name                 = "disk-vm-spc_os"
+      os_disk_caching              = "ReadWrite"
+      os_disk_storage_account_type = "Standard_LRS"
+
+      allow_extension_operations = true
+
+      storage_account_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
+
+      identity = "SystemAssigned"
+
+      source_image_reference_publisher = "Canonical"
+      source_image_reference_offer     = "UbuntuServer"
+      source_image_reference_sku       = "16.04-LTS"
+      source_image_reference_version   = "latest"
+
+      custom_data = null
+
+      zone = null
+
+      tags = null
+    }
+  }
+
+  virtual_machines_gallery = {
+    "vm_fsr" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name = "vm-fsr"
+      size = "Standard_D4s_v3"
+
+      network_interface_ids = [for nic in ["nic_fsr_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
+
+      disable_password_authentication = false
+
+      storage_account_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
+
+      identity = "SystemAssigned"
     }
   }
 
@@ -334,7 +491,7 @@ locals {
       os_profile_linux_config_disable_password_authentication = false
 
       boot_diagnostics_enabled     = true
-      boot_diagnostics_storage_uri = module.module_azurerm_storage_account["safsr"].storage_account.primary_blob_endpoint
+      boot_diagnostics_storage_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
 
       storage_os_disk_name              = "disk_vm_fgt_os"
       storage_os_disk_caching           = "ReadWrite"
@@ -372,6 +529,62 @@ locals {
           port2_netmask           = cidrnetmask(module.module_azurerm_subnet["internal"].subnet.address_prefixes[0])
         }
       )
+    }
+    "vm_faz" = {
+      resource_group_name = module.module_azurerm_resource_group[local.resource_group_name].resource_group.name
+      location            = module.module_azurerm_resource_group[local.resource_group_name].resource_group.location
+
+      name              = "vm-faz"
+      identity_identity = "SystemAssigned"
+
+      #availability_set_id or zones can be set but not both. Both can be null
+      availability_set_id = null
+      zones               = null
+
+      delete_os_disk_on_termination    = true
+      delete_data_disks_on_termination = true
+
+      network_interface_ids        = [for nic in ["nic_faz_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
+      primary_network_interface_id = module.module_azurerm_network_interface["nic_faz_1"].network_interface.id
+
+      public_ip_address = module.module_azurerm_public_ip["pip_faz"].public_ip.ip_address
+
+      vm_size = local.vm_image["fortianalyzer"].vm_size
+
+      storage_image_reference_publisher = local.vm_image["fortianalyzer"].publisher
+      storage_image_reference_offer     = local.vm_image["fortianalyzer"].offer
+      storage_image_reference_sku       = local.vm_image["fortianalyzer"].sku
+      storage_image_reference_version   = local.vm_image["fortianalyzer"].version
+
+      plan_publisher = local.vm_image["fortianalyzer"].publisher
+      plan_product   = local.vm_image["fortianalyzer"].offer
+      plan_name      = local.vm_image["fortianalyzer"].sku
+
+      os_profile_admin_username = var.username
+      os_profile_admin_password = var.password
+
+      os_profile_linux_config_disable_password_authentication = false
+
+      boot_diagnostics_enabled     = true
+      boot_diagnostics_storage_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
+
+      storage_os_disk_name              = "disk_vm_fat_os"
+      storage_os_disk_caching           = "ReadWrite"
+      storage_os_disk_managed_disk_type = "Premium_LRS"
+      storage_os_disk_create_option     = "FromImage"
+
+      storage_data_disks = [
+        {
+          name              = "disk_vm_faz_data_01"
+          managed_disk_type = "Premium_LRS"
+          create_option     = "Empty"
+          disk_size_gb      = "30"
+          lun               = "0"
+        }
+      ]
+
+      # FortiGate Configuration
+      config_data = null
     }
   }
 

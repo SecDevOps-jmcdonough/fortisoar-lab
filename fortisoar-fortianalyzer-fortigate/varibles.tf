@@ -37,12 +37,12 @@ variable "fortigate_sku" {
   default     = ""
 }
 
-variable "fortigate_ver" {
+variable "fortigate_version" {
   description = "FortiGate image version"
   default     = ""
 }
 
-variable "fortigate_size" {
+variable "fortigate_vm_size" {
   description = "FortiGate instance size"
   default     = ""
 }
@@ -59,38 +59,38 @@ variable "fortigate_1_license_file" {
   }
 }
 
-variable "fortitester_license_type" {
-  description = "FortiTester license type"
+variable "fortianalyzer_license_type" {
+  description = "FortiAnalyzer license type"
   default     = "byol"
 }
 
-variable "fortitester_offer" {
-  description = "FortiTester image offer"
+variable "fortianalyzer_offer" {
+  description = "FortiAnalyzer image offer"
   default     = ""
 }
 
-variable "fortitester_sku" {
-  description = "FortiTester image SKU"
+variable "fortianalyzer_sku" {
+  description = "FortiAnalyzer image SKU"
   default     = ""
 }
 
-variable "fortitester_ver" {
-  description = "FortiTester image version"
+variable "fortianalyzer_version" {
+  description = "FortiAnalyzer image version"
   default     = ""
 }
 
-variable "fortitester_size" {
-  description = "FortiTester instance size"
+variable "fortianalyzer_vm_size" {
+  description = "FortiAnalyzer instance size"
   default     = ""
 }
 
-variable "fortitester_license_file" {
-  description = "License file for FortiTester VM."
+variable "fortianalyzer_license_file" {
+  description = "License file for FortiAnalyzer VM."
   type        = string
   default     = ""
   validation {
     condition = (
-      can(regex("^(|\\w*.lic)$", var.fortitester_license_file))
+      can(regex("^(|\\w*.lic)$", var.fortianalyzer_license_file))
     )
     error_message = "Invalid license file. Options: \"\"|[0-9A-Za-z_]*.lic ."
   }
@@ -110,7 +110,7 @@ variable "forti_manager_serial" {
 
 variable "enable_module_output" {
   description = "Enable/Disable module output"
-  default     = true
+  default     = false
 }
 
 variable "username" {
@@ -120,5 +120,5 @@ variable "username" {
 
 variable "password" {
   description = "VM Password"
-  default     = "Password123!!"
+  default     = "123Password#@!"
 }
