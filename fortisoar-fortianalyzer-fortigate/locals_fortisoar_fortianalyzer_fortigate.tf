@@ -332,7 +332,7 @@ locals {
       location            = local.resource_group_data_location
 
       name = "vm-bobby-pc"
-      size = "Standard_DS2_v2"
+      size = "Standard_D2s_v3"
 
       availability_set_id   = null
       network_interface_ids = [for nic in ["nic_bpc_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
@@ -369,7 +369,7 @@ locals {
       location            = local.resource_group_data_location
 
       name = "vm-harry-pc"
-      size = "Standard_DS2_v2"
+      size = "Standard_D2s_v3"
 
       availability_set_id   = null
       network_interface_ids = [for nic in ["nic_hpc_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
@@ -406,7 +406,7 @@ locals {
       location            = local.resource_group_data_location
 
       name = "vm-sally-pc"
-      size = "Standard_DS2_v2"
+      size = "Standard_D2s_v3"
 
       availability_set_id   = null
       network_interface_ids = [for nic in ["nic_spc_1"] : module.module_azurerm_network_interface[nic].network_interface.id]
