@@ -1,5 +1,5 @@
 locals {
-  create_rg = true
+  create_rg = false
 }
 
 data "azurerm_resource_group" "resource_group" {
