@@ -348,7 +348,7 @@ locals {
 
       os_disk_name                 = "disk-vm-bpc_os"
       os_disk_caching              = "ReadWrite"
-      os_disk_storage_account_type = "Standard_LRS"
+      os_disk_storage_account_type = "Premium_LRS"
 
       allow_extension_operations = true
 
@@ -385,7 +385,7 @@ locals {
 
       os_disk_name                 = "disk-vm-hpc_os"
       os_disk_caching              = "ReadWrite"
-      os_disk_storage_account_type = "Standard_LRS"
+      os_disk_storage_account_type = "Premium_LRS"
 
       allow_extension_operations = true
 
@@ -422,7 +422,7 @@ locals {
 
       os_disk_name                 = "disk-vm-spc_os"
       os_disk_caching              = "ReadWrite"
-      os_disk_storage_account_type = "Standard_LRS"
+      os_disk_storage_account_type = "Premium_LRS"
 
       allow_extension_operations = true
 

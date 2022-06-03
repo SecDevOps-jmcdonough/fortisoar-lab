@@ -18,11 +18,8 @@
   * Connect tp FortiSOAR
 
 ***
-***
 
-## Chapter 1 - Deploy / Setup the environment (20min)
-
-<details>
+## Deploy / Setup the environment (40min)
 
 ### Task 1 FortiSOAR Configuration and Licensing
 
@@ -119,4 +116,14 @@
     * "Unauthorized" should appear beneath the IP address
 1. Turn off "Verify FortiAnalyzer certificate"
 1. Click "OK"
+1. Click "Authorize" in the ***FortiAnalyzer Status*** right-hand pane
+    * Login to FortiAnalyzer
+    * Click "Approve"
+    * Click "OK"
+1. Click "Test Connectivity"
+    * "Connected" should appear beneath the IP address
 
+  ![FortiFortiGate Set](images/fgt-setup-01.jpg)
+  ![FortiFortiGate Set](images/fgt-setup-02.jpg)
+  ![FortiFortiGate Set](images/fgt-setup-03.jpg)
+  ![FortiFortiGate Set](images/fgt-setup-04.jpg)
