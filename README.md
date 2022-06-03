@@ -123,7 +123,23 @@
 1. Click "Test Connectivity"
     * "Connected" should appear beneath the IP address
 
-  ![FortiFortiGate Set](images/fgt-setup-01.jpg)
-  ![FortiFortiGate Set](images/fgt-setup-02.jpg)
-  ![FortiFortiGate Set](images/fgt-setup-03.jpg)
-  ![FortiFortiGate Set](images/fgt-setup-04.jpg)
+  ![FortiFortiGate Setup](images/fgt-setup-01.jpg)
+  ![FortiFortiGate Setup](images/fgt-setup-02.jpg)
+  ![FortiFortiGate Setup](images/fgt-setup-03.jpg)
+  ![FortiFortiGate Setup](images/fgt-setup-04.jpg)
+
+### Task 4 Setup Malicious Network Traffic Utility
+
+1. Open CLI Session on FortiGate
+1. SSH to vm-harry-pc
+    * `execute ssh azureuser@10.135.6.5`
+1. Download and Install Malicious Traffic Network Utility - FlightSim by Alpha SOC
+
+    ```bash
+    wget https://github.com/alphasoc/flightsim/releases/download/v2.2.2/flightsim_2.2.2_linux_64-bit.deb
+    sudo dpkg -i flightsim_2.2.2_linux_64-bit.deb
+
+    ```
+
+  ![FlightSim Setup](images/flightsim-setup-01.jpg)
+  ![FlightSim Setup](images/flightsim-setup-02.jpg)
