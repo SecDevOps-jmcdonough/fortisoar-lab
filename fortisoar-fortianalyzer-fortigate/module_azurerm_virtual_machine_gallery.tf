@@ -10,8 +10,8 @@ resource "azurerm_virtual_machine" "virtual_machine_gallery" {
 
   resource_group_name = each.value.resource_group_name
   location            = each.value.location
-  name                             = each.value.name
-  vm_size = each.value.size
+  name                = each.value.name
+  vm_size             = each.value.size
 
   network_interface_ids = each.value.network_interface_ids
 
@@ -27,14 +27,9 @@ resource "azurerm_virtual_machine" "virtual_machine_gallery" {
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
-}
+  }
 
   os_profile_linux_config {
     disable_password_authentication = false
   }
 }
-
-#output "virtual_machines_gallery" {
-#  value     = var.enable_module_output ? module.azurerm_virtual_machine[*] : null
-#  sensitive = true
-#}

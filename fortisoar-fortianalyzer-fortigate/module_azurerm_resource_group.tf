@@ -1,19 +1,15 @@
-locals {
-  create_rg = false
-}
-
 data "azurerm_resource_group" "resource_group" {
-  count = local.create_rg ? 0 : 1
-  name = local.resource_group_name
+  count = local.rg_exists ? 1 : 0
+  name  = local.resource_group_name
 }
 
 module "module_azurerm_resource_group" {
-  count = local.create_rg ? 1 : 0
+  count = local.rg_exists ? 0 : 1
 
   source = "../azure/rm/azurerm_resource_group"
 
   name     = local.resource_group_name
-  location = var.resource_group_location
+  location = local.resource_group_location
 }
 
 output "resource_groups" {

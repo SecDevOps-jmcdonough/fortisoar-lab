@@ -1,15 +1,18 @@
 locals {
-  resource_group_name = "${var.student}${var.resource_group_name}"
+  resource_group_name     = "${var.student}${var.resource_group_name}"
+  resource_group_location = var.resource_group_location
+  rg_exists               = var.rg_exists
+
   resource_groups = {
     (local.resource_group_name) = {
       name     = local.resource_group_name
-      location = var.resource_group_location
+      location = local.resource_group_location
     }
   }
 
-  resource_group_data_name = local.create_rg ? module.module_azurerm_resource_group[0].resource_group.name : data.azurerm_resource_group.resource_group.0.name
-  resource_group_data_location = local.create_rg ? module.module_azurerm_resource_group[0].resource_group.location : data.azurerm_resource_group.resource_group.0.location
-  resource_group_data_id = local.create_rg ? module.module_azurerm_resource_group[0].resource_group.id : data.azurerm_resource_group.resource_group.0.id
+  resource_group_data_name     = local.rg_exists ? data.azurerm_resource_group.resource_group.0.name : module.module_azurerm_resource_group[0].resource_group.name
+  resource_group_data_location = local.rg_exists ? data.azurerm_resource_group.resource_group.0.location : module.module_azurerm_resource_group[0].resource_group.location
+  resource_group_data_id       = local.rg_exists ? data.azurerm_resource_group.resource_group.0.id : module.module_azurerm_resource_group[0].resource_group.id
 
   public_ips = {
     "pip_fsr" = {
@@ -516,10 +519,10 @@ locals {
       config_data = templatefile(
         "./fortios_config.conf", {
           host_name               = "vm-fgt"
-          connect_to_fmg          = var.connect_to_fmg
           license_type            = var.fortigate_license_type
-          forti_manager_ip        = var.forti_manager_ip
-          forti_manager_serial    = var.forti_manager_serial
+          connect_to_fmg          = ""
+          forti_manager_ip        = ""
+          forti_manager_serial    = ""
           license_file            = "${path.module}/${var.fortigate_1_license_file}"
           serial_number           = ""
           license_token           = ""

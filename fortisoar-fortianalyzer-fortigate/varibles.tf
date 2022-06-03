@@ -1,3 +1,8 @@
+variable "enable_module_output" {
+  description = "Enable/Disable module output"
+  default     = false
+}
+
 variable "resource_group_name" {
   description = "resource_group_name"
   type        = string
@@ -96,23 +101,6 @@ variable "fortianalyzer_license_file" {
   }
 }
 
-variable "connect_to_fmg" {
-  default = ""
-}
-
-variable "forti_manager_ip" {
-  default = ""
-}
-
-variable "forti_manager_serial" {
-  default = ""
-}
-
-variable "enable_module_output" {
-  description = "Enable/Disable module output"
-  default     = false
-}
-
 variable "username" {
   description = "VM Username"
   default     = "azureuser"
@@ -125,4 +113,8 @@ variable "password" {
 
 variable "student" {
   description = "Student ID"
+}
+
+variable "rg_exists" {
+  description = "Does the Resource Group already exist?"
 }
