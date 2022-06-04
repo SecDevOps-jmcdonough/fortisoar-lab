@@ -212,7 +212,7 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 ### Create FortiSOAR Playbooks
 
-#### Assets Records Playbook
+#### Asset Records Playbook Create
 
 1. Click on Automation -> Playbooks
 1. Click "+ Add Playbook"
@@ -257,13 +257,23 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
     1. Click "Save"
     1. Click "Save Playbook"
 
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-01.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-02.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-03.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-04.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-05.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-06.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-07.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-08.jpg)
-  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-09.jpg)
-  
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-01.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-02.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-03.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-04.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-05.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-06.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-07.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-08.jpg)
+  ![FortiSOAR Asset Record Playbook Create](images/fsr-asset-playbook-09.jpg)
+
+#### Asset Records Playbook Run
+
+1. Click on Recources -> Assets
+1. Click "Execute"
+1. Click "Asset Records" <- the screen will refresh with the asset records
+
+  ![FortiSOAR Asset Record Playbook Execute](images/fsr-asset-playbook-execute-01.jpg)
+  ![FortiSOAR Asset Record Playbook Execute](images/fsr-asset-playbook-execute-02.jpg)
+  ![FortiSOAR Asset Record Playbook Execute](images/fsr-asset-playbook-execute-03.jpg)
+
