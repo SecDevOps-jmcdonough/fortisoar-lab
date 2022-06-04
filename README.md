@@ -1,10 +1,23 @@
 # FortiSOAR Workshop
 
+## Technologies Utilized
+
+* FortiSOAR
+* FortiAnalyzer
+* FortiGate
+* Azure
+* FlightSim by Alpha SOC
+
+Fortinet Security Orchestration Platform™ (FortiSOAR™) is a scalable, awareness-driven, and encrypted security management intelligence platform. FortiSOAR is a centralized hub for your security operations and dramatically improves the effectiveness and efficiency of your security operations teams, by providing automation and customizable mechanisms for prevention, detection, and response to cybersecurity threats.
+
+This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. You will will connect these components via APIs (Connectors) and spoof malicious data creating alerts in FortiSOAR. Once we have all that done, we will proceed to tackle the Security event in FortiSOAR like a real SOC team would. Today you will be putting on your ADMIN hat, Security Architect Hat, and Analyst Hat.
+
 ## Workshop Main Objectives
 
 * FortiSOAR
   * Deployment
   * Connector Configuration
+  * Asset Management
   * Data Ingestion
   * Playbook deploy and Run
   * Incident Response Workshop
@@ -15,7 +28,6 @@
 
 * FortiGate
   * Connect to FortiAnalyzer
-  * Connect tp FortiSOAR
 
 ***
 
@@ -42,13 +54,19 @@
 #### Deploy FortiSOAR
 
 1. Run
-    * `ssh csadmin@<ip-address-of-fortisoar-vm>`
+    * `ssh csadmin@<ip-address-of-fortisoar-vm>` insert your FortiSOAR IP or run the command below to have the IP pulled from the terraform output
+
+    ```bash
+    ssh csadmin@$(terraform output | grep FortiSOAR | awk -F/ '{print $3}' | sed -e 's/\"$//')
+
+    ```
+
     * Current Password is `changeme`
     * Supply Current Password `changeme` again
     * Supply New Password and confirm it
 
 1. Restart ssh session `ssh csadmin@<ip-address-of-fortisoar-vm>` with new password
-1. An automated FortiSOAR configuration scrip with run.
+1. An automated FortiSOAR configuration script will run.
 
     1. Select "Continue"
     1. Select "Accept"
@@ -57,16 +75,20 @@
     1. Select "OK"
     1. Select "OK"
     1. Select "Proceed"
-    1. Select "OK" When the process is completed, the ssh session will terminate.
 
-1. Browse to FortiSOAR web interface
-1. Use your FortiCloud Account to activate the trial license.
-    1. User FortiCloud Account to Activate Trial License
-    1. Accept License Agreement
-1. Login
-    * Username: `csadmin`
-    * Password: `changeme`
-1. Change Password
+    * **IMPORTANT DO NOT CLICK OK BEFORE COPYING THE DEVICE UUID**
+
+    1. Use the Device UUID to register your license at [support.fortinet.com](https://support.fortinet.com)
+    1. Download license file
+
+    1. Browse to FortiSOAR web interface
+    1. Use your FortiCloud Account to activate the trial license.
+        1. User FortiCloud Account to Activate Trial License
+        1. Accept License Agreement
+    1. Login
+        * Username: `csadmin`
+        * Password: `changeme`
+    1. Change Password
 
   ![FortiSOAR Deploy](images/fsr-deploy-01.jpg)
   ![FortiSOAR Deploy](images/fsr-deploy-02.jpg)
@@ -75,14 +97,14 @@
   ![FortiSOAR Deploy](images/fsr-deploy-05.jpg)
   ![FortiSOAR Deploy](images/fsr-deploy-06.jpg)
   ![FortiSOAR Deploy](images/fsr-deploy-07.jpg)
+  ![FortiSOAR Deploy](images/fsr-deploy-08.jpg)
 
 ### Task 2 Setup FortiAnalyzer / Create API User
 
 #### Activate FortiAnalyzer Trial License / Change Password
 
 1. Open Browser to FortiAnalyzer web interface
-    * Activate Trial License with FortiCloud Account
-    * Accept Trial License Agreement - FortiAnalyzer will restart
+    * Upload provided license file
 1. Login to FortiAnalyzer web interface
     * Credentials are displayed using `terraform output`
     * Complete FortiAnalyzer setup, accept defaults
@@ -143,3 +165,105 @@
 
   ![FlightSim Setup](images/flightsim-setup-01.jpg)
   ![FlightSim Setup](images/flightsim-setup-02.jpg)
+
+## FortiSOAR Connectors and Playbooks (40min)
+
+### Configure FortiSOAR Connectors
+
+#### FortiAnalyzer Connector
+
+1. Login to FortiSOAR web interface
+1. Click on Automation -> Connectors
+1. Click the "Discover" Tab
+1. Enter "FortiAnalyzer" in the search bar
+1. Click the "FortiAnalyzer" tile
+1. Click "Install"
+1. Click "Confirm" in the Confirm Dialog
+1. Create a Configuration
+    * Configuration Name: `Workshop config`
+    * Server URL: `https://<your-faz-ip-address>/` <- make sure you have the trailing slash
+    * Username: `apiuser`
+    * Password: `SecurityFabric`
+    * ADOM Name: `root`
+    * Port: `443`
+    * Uncheck Verify SSL
+    * Click "Save" <- When a successful connection is made the connector will display a "HEALTH CHECK: AVAILABLE" indicator
+
+  ![FortiSOAR FortiAnalyzer Connector Setup](images/fsr-faz-connector-01.jpg)
+  ![FortiSOAR FortiAnalyzer Connector Setup](images/fsr-faz-connector-02.jpg)
+  ![FortiSOAR FortiAnalyzer Connector Setup](images/fsr-faz-connector-03.jpg)
+  ![FortiSOAR FortiAnalyzer Connector Setup](images/fsr-faz-connector-04.jpg)
+
+#### Azure Compute Connector
+
+1. Click the "Discover" Tab
+1. Enter "Azure Compute" in the search bar
+1. Click the "Azure Compute" tile
+1. Click "Install"
+1. Click "Confirm" in the Confirm Dialog
+1. Create a Configuration
+    * Configuration Name: `Workshop config`
+    * Directory (Tenant) ID: *Value to be provided*
+    * Application (Client) ID: *Value to be provided*
+    * Application (Client) Secret:*Value to be provided*
+    * Click "Save" <- When a successful connection is made the connector will display a "HEALTH CHECK: AVAILABLE" indicator
+
+  ![FortiSOAR Azure Compute Connector Setup](images/fsr-azc-connector-01.jpg)
+
+### Create FortiSOAR Playbooks
+
+#### Assets Records Playbook
+
+1. Click on Automation -> Playbooks
+1. Click "+ Add Playbook"
+    1. Name: `Asset Records`
+    1. Click "Create"
+    1. Choose a Trigger - "Manual"
+    1. Select Execution Behavior - "Does not require a record input to run"
+    1. Select Module - "Assets"
+    1. Click "Save"
+    1. Grab the Blue Orb next to the **Start** step and drag out a new step
+    1. Select "Set Variable"
+    1. Step Name: "Asset Records"
+    1. Variables: "+ Add New"
+        1. Variable: `assets`
+        1. Value: copy and paste the JSON text below
+
+            ```bash
+            {
+              "Results": [
+                      {"ip":"10.135.6.4","name":"vm-bobby-pc"},
+                      {"ip":"10.135.6.5","name":"vm-harry-pc"},
+                      {"ip":"10.135.6.6","name":"vm-sally-pc"},
+                  ]
+            }
+            ```
+
+            These are the contents of the file `vm-assets.json` from the Cloudshell terraform directory. This file was created as part of the Terraform apply step.
+
+        1. Click "Save"
+
+    1. Grab the Blue Orb next to the **Asset Records** step and drag out a new step
+    1. Select "Create Record"
+    1. Step Name: "Create Assets"
+    1. Select Model: "Assets"
+    1. MAC Address: NONE
+    1. Click "+ Loop" at bottom of screen
+    1. Click in the "Array of objects..." field
+        1. Enter `{{vars.assets.Results}}`  
+    1. Scroll up to Fields
+        1. "IP Address" field enter `{{vars.item.ip}}`
+        1. "Hostname" field enter `{{vars.item.name}}`
+    1. Click "Save"
+    1. Click "Save Playbook"
+
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-01.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-02.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-03.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-04.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-05.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-06.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-07.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-08.jpg)
+  ![FortiSOAR Asset Record Playbook](images/fsr-asset-playbook-09.jpg)
+  
