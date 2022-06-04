@@ -136,8 +136,8 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 1. Enter FortiAnalyzer - IP address can be found using `terraform output`
 1. Click "Test Connectivity"
     * "Unauthorized" should appear beneath the IP address
-1. Turn off "Verify FortiAnalyzer certificate"
 1. Click "OK"
+1. Re-Edit FortiAnalyzer Fabric Connector
 1. Click "Authorize" in the ***FortiAnalyzer Status*** right-hand pane
     * Login to FortiAnalyzer
     * Click "Approve"
@@ -150,16 +150,18 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
   ![FortiFortiGate Setup](images/fgt-setup-03.jpg)
   ![FortiFortiGate Setup](images/fgt-setup-04.jpg)
 
-### Task 4 Setup Malicious Network Traffic Utility
+### Task 4 Setup Malicious Network Traffic Utility and Generate Traffic
 
 1. Open CLI Session on FortiGate
 1. SSH to vm-harry-pc
     * `execute ssh azureuser@10.135.6.5`
 1. Download and Install Malicious Traffic Network Utility - FlightSim by Alpha SOC
+1. Run `flightsim run` to generate malicious traffic
 
     ```bash
     wget https://github.com/alphasoc/flightsim/releases/download/v2.2.2/flightsim_2.2.2_linux_64-bit.deb
     sudo dpkg -i flightsim_2.2.2_linux_64-bit.deb
+    flightsim run
 
     ```
 
@@ -168,7 +170,7 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 ## FortiSOAR Connectors and Playbooks (40min)
 
-### Configure FortiSOAR Connectors
+### Task 1 Configure FortiSOAR Connectors
 
 #### FortiAnalyzer Connector
 
@@ -210,7 +212,7 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
   ![FortiSOAR Azure Compute Connector Setup](images/fsr-azc-connector-01.jpg)
 
-### Create FortiSOAR Playbooks
+### Task 2 Create and Execute FortiSOAR Playbooks
 
 #### Asset Records Playbook Create
 
@@ -246,7 +248,7 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
     1. Grab the Blue Orb next to the **Asset Records** step and drag out a new step
     1. Select "Create Record"
     1. Step Name: "Create Assets"
-    1. Select Model: "Assets"
+    1. Select Module - "Assets"
     1. MAC Address: NONE
     1. Click "+ Loop" at bottom of screen
     1. Click in the "Array of objects..." field
@@ -269,7 +271,7 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 #### Asset Records Playbook Run
 
-1. Click on Recources -> Assets
+1. Click on Resources -> Assets
 1. Click "Execute"
 1. Click "Asset Records" <- the screen will refresh with the asset records
 
@@ -277,3 +279,60 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
   ![FortiSOAR Asset Record Playbook Execute](images/fsr-asset-playbook-execute-02.jpg)
   ![FortiSOAR Asset Record Playbook Execute](images/fsr-asset-playbook-execute-03.jpg)
 
+#### Block C&C Playbook Create
+
+1. Click on Automation -> Playbooks
+1. Click "+ Add Playbook"
+    1. Name: `Block C&C`
+    1. Click "Create"
+    1. Choose a Trigger - "On Create"
+    1. Select Module - "Alerts"
+    1. Click "+ ADD CONDITION"
+        1. Select a field - `Name`
+        1. Select Operator - `Contains`
+        1. Name - `Traffic to C&C`
+    1. Click "Save"
+    1. Grab the Blue Orb next to the **Start** step and drag out a new step
+    1. Select "Find Records"
+    1. Step Name "Find Assets"
+    1. Select Module - "Assets"
+    1. Click "+ ADD CONDITION"
+        1. Select a field - `IP Address`
+        1. Select Operator - `Equals`
+        1. IP Address Field
+            1. Click in field
+            1. Find and Click "Source IP" in the Dynamic Values Input. The result in the field should be, `{{vars.input.records[0].sourceIp}}`
+    1. Click "Save"
+    1. Grab the Blue Orb next to the **Find Asset** step and drag out a new step
+    1. Select "Connector"
+    1. Search for "Azure Compute"
+    1. Click "Azure Compute"
+    1. Step Name: "Stop Instance"
+    1. Select Action - "Stop an Instance"
+    1. Inputs
+        1. Subscription ID - Pick the only available option
+        1. Resource Group Name - Pick your Resource Group Name
+        1. Virtual Machine Name - Click the curly braces {}
+            1. Click in the empty field
+            1. In Dynamic Values Open Step results
+            1. Select Hostname - the result in the field should be. `{{vars.steps.Find_Assets[0].hostname}}`
+    1. Click "Save"
+    1. Grab the Blue Orb next to the **Stop Instance** step and drag out a new step
+    1. Click "Update Record"
+    1. Step Name "Update Severity and Add Notes"
+    1. Model "Alerts"
+    1. Record IRI - Click in field and select Dynamic Values **Input** "@id"
+    1. Type asset in search box under Fields
+    1. Add asset ID to Assets Field - Click in field and select Dynamic Values **Step Results** Find Asset "@id"
+    1. Click "+ Message" Button at bottom of screen
+    1. Add Message
+        1. `Hostname: {{vars.steps.Find_Asset[0].hostname}} was shutdown by playbook due to malicious activity.`
+
+        1. Highlight the word malicious in red
+    1. Click "Save"
+    1. Click "Save Playbook"
+
+    ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-01.jpg)
+    ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-02.jpg)
+    ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-03.jpg)
+    ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-04.jpg)
