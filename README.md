@@ -336,3 +336,33 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
     ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-02.jpg)
     ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-03.jpg)
     ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-04.jpg)
+
+### Task 3 Ingest FortiAnalyzer Data
+
+#### Setup Data Ingestion
+
+1. Click on Automation -> Data Ingestion
+1. Select "FortiAnalyzer"
+1. Click Setup Data Ingestion
+1. Click "Let's start by fetching some data"
+1. Clear the Search Query Field
+1. Set Maximum Records to Fetch to `20`
+1. Set Pull Sample Events in Past X Minutes to `120`
+1. Click "FETCH DATA"
+1. Search for IP in Field Mapping
+1. Click Source IP Field
+1. Find an Click `epip` in the Sample Data
+1. Click "Save Mapping & Continue"
+1. Click "Save Settings & Continue" on the Schedule Data Ingestion page
+1. Click "Trigger Ingestion Now"
+1. Click "Yes, Trigger Ingestion Now"
+1. Click "Done"
+
+    ![FortiSOAR Data Ingestion](images/fsr-data-ingest-01.jpg)
+    ![FortiSOAR Data Ingestion](images/fsr-data-ingest-02.jpg)
+    ![FortiSOAR Data Ingestion](images/fsr-data-ingest-03.jpg)
+    ![FortiSOAR Data Ingestion](images/fsr-data-ingest-04.jpg)
+    ![FortiSOAR Data Ingestion](images/fsr-data-ingest-05.jpg)
+    ![FortiSOAR Data Ingestion](images/fsr-data-ingest-06.jpg)
+
+## FortiSOAR Incident Response (40min)
