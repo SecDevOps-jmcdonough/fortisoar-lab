@@ -1,7 +1,7 @@
 data "azurerm_shared_image" "shared_image" {
-  name                = "FortiSOAR-7-2-0"
-  gallery_name        = "FTNT_Compute_Gallery"
-  resource_group_name = "FTNT-Training-Mgmt"
+  name                = "FortiSOAR"
+  gallery_name        = "Fortinet_Images"
+  resource_group_name = "FTNT-Compute-Gallery"
 }
 
 resource "azurerm_virtual_machine" "virtual_machine_gallery" {
