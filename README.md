@@ -42,7 +42,7 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 1. Login to [Azure](https://portal.azure.com) with provided credentials
 1. Open Cloudshell
-1. Change to the FortiSOAR Lab directory
+1. Change to the FortiSOAR workshop directory
     * `cd ./fortisoar-lab/fortisoar-fortianalyzer-fortigate/`
 1. Run
     * `terraform output`  - to display lab IP addresses and credentials
@@ -51,7 +51,9 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
   ![Azure Environment](images/az-login-02.jpg)
   ![Azure Environment](images/az-login-04.jpg)
 
-#### Deploy FortiSOAR
+#### Configure FortiSOAR
+
+> The FortiSOAR VM has been deployed into an Azure Resource Group and needs to be configured. Configuration happens via a script that is run automatically when the `csadmin` user does an SSH login to the FortiSOAR VM. When the configuration script completes a UUID is generated for the FortiSOAR VM, this UUID is required for  licensing.
 
 1. Run
     * `ssh csadmin@<ip-address-of-fortisoar-vm>` insert your FortiSOAR IP or run the command below to have the IP pulled from the terraform output
@@ -101,16 +103,18 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 ### Task 2 Setup FortiAnalyzer / Create API User
 
-#### Activate FortiAnalyzer Trial License / Change Password
+#### Activate FortiAnalyzer License / Change Password
 
 1. Open Browser to FortiAnalyzer web interface
-    * Upload provided license file
+    * Upload license file
 1. Login to FortiAnalyzer web interface
     * Credentials are displayed using `terraform output`
     * Complete FortiAnalyzer setup, accept defaults
 1. Change FortiAnalyzer Password
 
 #### Create API User for Connection to FortiSOAR
+
+FortiSOAR will ingest logs from FortiAnalyzer, the `apiuser` will be used by the **FortiAnalyzer Connector** in FortiSOAR
 
 1. Click "System Settings"
 1. Click "Admin"
@@ -127,6 +131,8 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
   ![FortiAnalyzer API User](images/faz-setup-03.jpg)
 
 ### Task 3 Connect FortiGate to FortiAnalyzer
+
+Traffic logs from the FortiGate will be sent to FortiAnalyzer to then be ingested by FortiSOAR
 
 1. Login to FortiGate web interface
     * Credentials are displayed using `terraform output`
@@ -172,6 +178,8 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 ### Task 1 Configure FortiSOAR Connectors
 
+The FortiSOAR Connectors provide interaction with other products and service. The connectors can be used in FortiSOAR Playbooks as well as triggered manually.
+
 #### FortiAnalyzer Connector
 
 1. Login to FortiSOAR web interface
@@ -198,6 +206,8 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 #### Azure Compute Connector
 
+The Azure Compute Connector for FortiSOAR provides a number of actions to FortiSOAR for Managing Azure VMs. The Playbooks used during this workshop will stop a VM that is accessing malicious hosts, triage that host and then start it.
+
 1. Click the "Discover" Tab
 1. Enter "Azure Compute" in the search bar
 1. Click the "Azure Compute" tile
@@ -214,7 +224,9 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 ### Task 2 Create and Execute FortiSOAR Playbooks
 
-#### Asset Records Playbook Create
+#### Asset Records Playbook - Create
+
+The Terraform code that created this environment generated an assets file that will be run through a FortiSOAR playbook to create asset records in FortiSOAR. An assets playbook could be run every time an environment is updated or via an API call in a CI/CD pipeline. Other playbooks to use the asset records to correlate Azure private IP addresses seen in FortiGate logs to the Azure name of the VM.
 
 1. Click on Automation -> Playbooks
 1. Click "+ Add Playbook"
@@ -281,12 +293,14 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
 
 #### Block C&C Playbook Create
 
+Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting hosts on the Internet that have bad reputations, some hosts are known Command and Control servers. This FortiSOAR Playbook will recognize the interactions from Harry's VM to these Command and Control Serves and shutdown Harry's VM. After the VM has been shutdown the incident will be managed through FortiSOAR. Maybe Harry's VM will be turned back on or maybe Harry has some explaining to do (FortiSOAR does not handle that part).
+
 1. Click on Automation -> Playbooks
 1. Click "+ Add Playbook"
     1. Name: `Block C&C`
     1. Click "Create"
     1. Choose a Trigger - "On Create"
-    1. Select Module - "Alerts"
+    1. Select Resource - "Alerts"
     1. Click "+ ADD CONDITION"
         1. Select a field - `Name`
         1. Select Operator - `Contains`
@@ -337,9 +351,28 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
     ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-03.jpg)
     ![FortiSOAR Block C&C Playbook Create](images/fsr-block-cnc-04.jpg)
 
+#### Incident Response Playbook Import
+
+The Incident Response Playbook is much larger than the Playbooks that were just created and needs to be imported. Playbooks can be exported and imported into FortiSOAR. For this task the Playbook needs to be copied from this repository to a file on your local system so that it can be imported in to FortiSOAR.
+
+1. Copy the **raw** contents of the [incident response playbook](https://github.com/FortinetSecDevOps/fortisoar-lab/blob/main/fortisoar-fortianalyzer-fortigate/incident-response-fortisoar-workshop.json)
+1. Save to a local file with with a `.json` extension.
+1. Click on Automation -> Playbooks
+1. Click "Import"
+1. Drag file to import or Click and select file from directory
+1. Click "Import"
+
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-01.jpg)
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-02.jpg)
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-03.jpg)
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-04.jpg)
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-05.jpg)
+
 ### Task 3 Ingest FortiAnalyzer Data
 
 #### Setup Data Ingestion
+
+Setup FortiAnalyzer Data ingestion to retrieve FortiGate traffic logs. Map the `epip` field in the ingested record to the Source IP field in the FortiSOAR records.
 
 1. Click on Automation -> Data Ingestion
 1. Select "FortiAnalyzer"

@@ -575,7 +575,7 @@ locals {
       boot_diagnostics_enabled     = true
       boot_diagnostics_storage_uri = module.module_azurerm_storage_account["sautil"].storage_account.primary_blob_endpoint
 
-      storage_os_disk_name              = "disk_vm_fat_os"
+      storage_os_disk_name              = "disk_vm_faz_os"
       storage_os_disk_caching           = "ReadWrite"
       storage_os_disk_managed_disk_type = "Premium_LRS"
       storage_os_disk_create_option     = "FromImage"
