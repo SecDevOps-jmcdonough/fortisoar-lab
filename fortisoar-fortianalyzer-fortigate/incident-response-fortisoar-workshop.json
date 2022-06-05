@@ -4,7 +4,7 @@
     {
       "@context": "/api/3/contexts/WorkflowCollection",
       "@type": "WorkflowCollection",
-      "name": "00.5 - FSR SME workshop",
+      "name": "incident-response-fortisoar-workshop",
       "description": null,
       "visible": true,
       "image": null,
