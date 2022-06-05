@@ -158,6 +158,8 @@ Traffic logs from the FortiGate will be sent to FortiAnalyzer to then be ingeste
 
 ### Task 4 Setup Malicious Network Traffic Utility and Generate Traffic
 
+**vm-harry-pc** is a user VM that is used to generate malicious / suspect traffic. SSH to the VM via a CLI session on the FortiGate and setup the utility to generate the traffic.
+
 1. Open CLI Session on FortiGate
 1. SSH to vm-harry-pc
     * `execute ssh azureuser@10.135.6.5`
@@ -367,6 +369,8 @@ The Incident Response Playbook is much larger than the Playbooks that were just 
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-03.jpg)
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-04.jpg)
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-05.jpg)
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-05.jpg)
+    ![FortiSOAR Playbook Import](images/fsr-playbook-import-06.jpg)
 
 ### Task 3 Ingest FortiAnalyzer Data
 
@@ -398,4 +402,57 @@ Setup FortiAnalyzer Data ingestion to retrieve FortiGate traffic logs. Map the `
     ![FortiSOAR Data Ingestion](images/fsr-data-ingest-05.jpg)
     ![FortiSOAR Data Ingestion](images/fsr-data-ingest-06.jpg)
 
-## FortiSOAR Incident Response (40min)
+## FortiSOAR Incident Response (10min)
+
+### Task 1 View Alert and Escalate
+
+A correctly configured "Block C&C" playbook will generate several alerts and will have shut down **vm-harry-pc**.
+
+1. Click on Incident Response -> Alerts
+1. Pick any alert that has the name **Traffic to C&C from 10.135.6.5 detected**
+1. Click the blue chat bubble in the upper right-hand corner to open the "Workspace"
+    * Under Comments you will the message indicating that **vm-harry-pc** was shutdown by the Block C&C playbook
+1. Click the Recommendations tab - the system has correlated similar records
+    1. Under Similar Records
+        1. Check Select all
+        1. Check Include this record
+1. Click Playbooks and Select "Escalate"
+1. Escalate
+    1. Incident Name: Enter `C&C from vm-harry-pc`
+    1. Severity: Select `Critical`
+    1. Incident Lead: Select `CS Admin (me)`
+    1. Escalation Reason: Pre-populated ***Alert needs to be investigated***
+    1. Incident Type: Select `Malware`
+    1. Closure Reason: Select `Escalated to Incident`
+
+### Task 2 Incident Response
+
+1. Click on Incident Response -> Incidents
+1. Click on "C&C from vm-harry-pc"
+1. Open "Workspace" (blue chat bubble in the upper right-hand corner)
+1. Scroll through the Incident and notice how it differs from the one alert (hint: scroll down and check out correlations)
+1. Run Playbook - Incident Response Plan (Type C&C) <- Playbook could also be triggered automatically
+1. Identify Delivery Vector: Select `Other`
+1. Click "Save"
+1. Identify Target System: Enter `vm-harry-pc`
+1. Click "Save"
+1. Click "No Binary Found"
+
+    * Comments section in Workspace will populate with Playbook progress
+
+    ![FortiSOAR Incident Response](images/fsr-incident-response-01.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-02.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-03.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-04.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-05.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-06.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-07.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-08.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-09.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-10.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-11.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-12.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-13.jpg)
+    ![FortiSOAR Incident Response](images/fsr-incident-response-14.jpg)
+
+This is how customers use FortiSOAR: The Orchestration of Technology, process, and people.
