@@ -122,7 +122,7 @@ FortiSOAR will ingest logs from FortiAnalyzer, the `apiuser` will be used by the
 1. Click "+ Create New"
     * User Name: **apiuser**
     * Password: **SecurityFabric**
-    * Admin Profile: **Super_user**
+    * Admin Profile: **Super_User**
     * JSON API Access: **Read-Write**
     * Click "OK"
 
@@ -161,20 +161,23 @@ Traffic logs from the FortiGate will be sent to FortiAnalyzer to then be ingeste
 **vm-harry-pc** is a user VM that is used to generate malicious / suspect traffic. SSH to the VM via a CLI session on the FortiGate and setup the utility to generate the traffic.
 
 1. Open CLI Session on FortiGate
-1. SSH to vm-harry-pc
+1. SSH to vm-harry-pc (10.135.6.5)
     * `execute ssh azureuser@10.135.6.5`
-1. Download and Install Malicious Traffic Network Utility - FlightSim by Alpha SOC
-1. Run `flightsim run` to generate malicious traffic
+1. Download, Install and Run the Malicious Traffic Network Utility - FlightSim by Alpha SOC
+    * Use the bash commands below
 
-    ```bash
-    wget https://github.com/alphasoc/flightsim/releases/download/v2.2.2/flightsim_2.2.2_linux_64-bit.deb
-    sudo dpkg -i flightsim_2.2.2_linux_64-bit.deb
-    flightsim run
+  ```bash
+  wget https://github.com/alphasoc/flightsim/releases/download/v2.2.2/flightsim_2.2.2_linux_64-bit.deb
+  sudo dpkg -i flightsim_2.2.2_linux_64-bit.deb
+  flightsim run
 
-    ```
+  ```
+
+1. View the FortiGate Log "Forward Traffic" and inspect some of the IPs. There will be several marked as "Known malicious site"
 
   ![FlightSim Setup](images/flightsim-setup-01.jpg)
   ![FlightSim Setup](images/flightsim-setup-02.jpg)
+  ![FlightSim Setup](images/flightsim-setup-03.jpg)
 
 ## FortiSOAR Connectors and Playbooks (40min)
 
@@ -182,7 +185,9 @@ Traffic logs from the FortiGate will be sent to FortiAnalyzer to then be ingeste
 
 The FortiSOAR Connectors provide interaction with other products and service. The connectors can be used in FortiSOAR Playbooks as well as triggered manually.
 
-#### FortiAnalyzer Connector
+#### Configure FortiAnalyzer Connector
+
+The FortiSOAR FortiAnalyzer connector enables FortiSOAR to ingest FortiAnalyzer logs.
 
 1. Login to FortiSOAR web interface
 1. Click on Automation -> Connectors
@@ -206,10 +211,11 @@ The FortiSOAR Connectors provide interaction with other products and service. Th
   ![FortiSOAR FortiAnalyzer Connector Setup](images/fsr-faz-connector-03.jpg)
   ![FortiSOAR FortiAnalyzer Connector Setup](images/fsr-faz-connector-04.jpg)
 
-#### Azure Compute Connector
+#### Configure Azure Compute Connector
 
 The Azure Compute Connector for FortiSOAR provides a number of actions to FortiSOAR for Managing Azure VMs. The Playbooks used during this workshop will stop a VM that is accessing malicious hosts, triage that host and then start it.
 
+1. Click on Automation -> Connectors
 1. Click the "Discover" Tab
 1. Enter "Azure Compute" in the search bar
 1. Click the "Azure Compute" tile
@@ -219,7 +225,7 @@ The Azure Compute Connector for FortiSOAR provides a number of actions to FortiS
     * Configuration Name: `Workshop config`
     * Directory (Tenant) ID: *Value to be provided*
     * Application (Client) ID: *Value to be provided*
-    * Application (Client) Secret:*Value to be provided*
+    * Application (Client) Secret: *Value to be provided*
     * Click "Save" <- When a successful connection is made the connector will display a "HEALTH CHECK: AVAILABLE" indicator
 
   ![FortiSOAR Azure Compute Connector Setup](images/fsr-azc-connector-01.jpg)
@@ -228,7 +234,7 @@ The Azure Compute Connector for FortiSOAR provides a number of actions to FortiS
 
 #### Asset Records Playbook - Create
 
-The Terraform code that created this environment generated an assets file that will be run through a FortiSOAR playbook to create asset records in FortiSOAR. An assets playbook could be run every time an environment is updated or via an API call in a CI/CD pipeline. Other playbooks to use the asset records to correlate Azure private IP addresses seen in FortiGate logs to the Azure name of the VM.
+The Terraform code that created this environment generated an assets file, `vm_assets.json`,  of the user VMs in the environment. The contents will be run through a FortiSOAR playbook to create asset records in FortiSOAR. From an environment management perspective, an assets playbook could be run manualy every time an environment is updated or via an API call in a CI/CD pipeline. Playbooks can use the asset records to correlate Azure private IP addresses seen in FortiGate logs to the Azure name of the VM.
 
 1. Click on Automation -> Playbooks
 1. Click "+ Add Playbook"
@@ -262,7 +268,7 @@ The Terraform code that created this environment generated an assets file that w
     1. Grab the Blue Orb next to the **Asset Records** step and drag out a new step
     1. Select "Create Record"
     1. Step Name: "Create Assets"
-    1. Select Module - "Assets"
+    1. Select Model - "Assets"
     1. MAC Address: NONE
     1. Click "+ Loop" at bottom of screen
     1. Click in the "Array of objects..." field
@@ -295,7 +301,7 @@ The Terraform code that created this environment generated an assets file that w
 
 #### Block C&C Playbook Create
 
-Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting hosts on the Internet that have bad reputations, some hosts are known Command and Control servers. This FortiSOAR Playbook will recognize the interactions from Harry's VM to these Command and Control Serves and shutdown Harry's VM. After the VM has been shutdown the incident will be managed through FortiSOAR. Maybe Harry's VM will be turned back on or maybe Harry has some explaining to do (FortiSOAR does not handle that part).
+Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting hosts on the Internet that have bad reputations, some hosts are known Command and Control servers. This FortiSOAR Playbook will recognize the interactions from Harry's VM to these Command and Control Serves and shutdown Harry's VM. After the VM has been shutdown the incident will be managed through FortiSOAR. Maybe Harry's VM will be turned back on or maybe Harry has some explaining to do...
 
 1. Click on Automation -> Playbooks
 1. Click "+ Add Playbook"
@@ -330,20 +336,21 @@ Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting 
         1. Resource Group Name - Pick your Resource Group Name
         1. Virtual Machine Name - Click the curly braces {}
             1. Click in the empty field
-            1. In Dynamic Values Open Step results
+            1. In Dynamic Values open "Step Results" -> "Find Assets[]"
             1. Select Hostname - the result in the field should be. `{{vars.steps.Find_Assets[0].hostname}}`
     1. Click "Save"
     1. Grab the Blue Orb next to the **Stop Instance** step and drag out a new step
     1. Click "Update Record"
     1. Step Name "Update Severity and Add Notes"
     1. Model "Alerts"
-    1. Record IRI - Click in field and select Dynamic Values **Input** "@id"
+    1. Record IRI - Click in field and select Dynamic Values open "Input" -> "Records" -> "modules" -> "Alerts" -> "@id"
+        * Value in field should be `{{vars.input.records[0]['@id']}}`
     1. Type asset in search box under Fields
-    1. Add asset ID to Assets Field - Click in field and select Dynamic Values **Step Results** Find Asset "@id"
+    1. Add asset ID to "Correlations" -> "Assets" Field - Click in field and select Dynamic Values open  "Step Results" -> "Find Assets []" -> "@id"
+        * Value in field should be `{{vars.steps.Find_Assets[0]['@id']}}`
     1. Click "+ Message" Button at bottom of screen
     1. Add Message
         1. `Hostname: {{vars.steps.Find_Asset[0].hostname}} was shutdown by playbook due to malicious activity.`
-
         1. Highlight the word malicious in red
     1. Click "Save"
     1. Click "Save Playbook"
@@ -355,7 +362,7 @@ Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting 
 
 #### Incident Response Playbook Import
 
-The Incident Response Playbook is much larger than the Playbooks that were just created and needs to be imported. Playbooks can be exported and imported into FortiSOAR. For this task the Playbook needs to be copied from this repository to a file on your local system so that it can be imported in to FortiSOAR.
+The Incident Response Playbook is much larger than the Playbooks that were just created and will be imported. Playbooks can be exported and imported into FortiSOAR. For this task the Playbook needs to be copied from this repository to a file on your local system so that it can be imported in to FortiSOAR.
 
 1. Copy the **raw** contents of the [incident response playbook](https://github.com/FortinetSecDevOps/fortisoar-lab/blob/main/fortisoar-fortianalyzer-fortigate/incident-response-fortisoar-workshop.json)
 1. Save to a local file with with a `.json` extension.
@@ -369,7 +376,6 @@ The Incident Response Playbook is much larger than the Playbooks that were just 
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-03.jpg)
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-04.jpg)
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-05.jpg)
-    ![FortiSOAR Playbook Import](images/fsr-playbook-import-05.jpg)
     ![FortiSOAR Playbook Import](images/fsr-playbook-import-06.jpg)
 
 ### Task 3 Ingest FortiAnalyzer Data
@@ -378,16 +384,18 @@ The Incident Response Playbook is much larger than the Playbooks that were just 
 
 Setup FortiAnalyzer Data ingestion to retrieve FortiGate traffic logs. Map the `epip` field in the ingested record to the Source IP field in the FortiSOAR records.
 
+> Prior to running this data ingestion step, use the FortiGate CLI to ssh to `vm-harry-pc` and run the FlightSim traffic generator again. `flightsim run`
+
 1. Click on Automation -> Data Ingestion
 1. Select "FortiAnalyzer"
-1. Click Setup Data Ingestion
+1. Click "Configure Ingestion"
 1. Click "Let's start by fetching some data"
 1. Clear the Search Query Field
-1. Set Maximum Records to Fetch to `20`
+1. Set Maximum Records to Fetch to `200`
 1. Set Pull Sample Events in Past X Minutes to `120`
 1. Click "FETCH DATA"
-1. Search for IP in Field Mapping
-1. Click Source IP Field
+1. Search for "Source IP" in Field Mapping
+1. Click in "Source IP" Field
 1. Find an Click `epip` in the Sample Data
 1. Click "Save Mapping & Continue"
 1. Click "Save Settings & Continue" on the Schedule Data Ingestion page
