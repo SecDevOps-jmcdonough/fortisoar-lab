@@ -339,7 +339,7 @@ Bobby, Harry, and Sally have VMs in Azure. Recently Harry's VM has been visiting
     1. Click "+ ADD CONDITION"
         1. Select a field - `Name`
         1. Select Operator - `Contains`
-        1. Name - `Traffic to C&C`
+        1. Name - `IP scanning on port`
     1. Click "Save"
     1. Grab the Blue Orb next to the **Start** step and drag out a new step
     1. Select "Find Records"
