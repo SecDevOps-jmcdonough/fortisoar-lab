@@ -328,7 +328,7 @@ The Terraform code that created this environment generated an assets file, `vm_a
 
 #### Block C&C Playbook Create
 
-Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting hosts on the Internet that have bad reputations, some hosts are known Command and Control servers. This FortiSOAR Playbook will recognize the interactions from Harry's VM to these Command and Control Serves and shutdown Harry's VM. After the VM has been shutdown the incident will be managed through FortiSOAR. Maybe Harry's VM will be turned back on or maybe Harry has some explaining to do...
+Bobby, Harry, and Sally have VMs in Azure. Recently Harry's VM has been visiting hosts on the Internet that have bad reputations, some hosts are known Command and Control servers. This FortiSOAR Playbook will recognize the interactions from Harry's VM to these Command and Control Serves and shutdown Harry's VM. After the VM has been shutdown the incident will be managed through FortiSOAR. Maybe Harry's VM will be turned back on or maybe Harry has some explaining to do...
 
 1. Click on Automation -> Playbooks
 1. Click "+ Add Playbook"
@@ -350,7 +350,7 @@ Bobby, Harry and Sally have VMs in Azure. Recently Harry's VM has been visiting 
         1. Select Operator - `Equals`
         1. IP Address Field
             1. Click in field
-            1. Find and Click "Source IP" in the Dynamic Values Input. The result in the field should be, `{{vars.input.records[0].sourceIp}}`
+            1. Find and Click "Source IP" in the Dynamic Values open "Input" -> "Records" -> "modules" -> "Alerts" -> "Spource IPq". The result in the field should be, `{{vars.input.records[0].sourceIp}}`
     1. Click "Save"
     1. Grab the Blue Orb next to the **Find Asset** step and drag out a new step
     1. Select "Connector"
