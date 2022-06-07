@@ -51,9 +51,11 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
   ![Azure Environment](images/az-login-02.jpg)
   ![Azure Environment](images/az-login-04.jpg)
 
-#### Configure FortiSOAR
+#### Un-configured FortiSOAR
 
-> The FortiSOAR VM has been deployed into an Azure Resource Group and needs to be configured. Configuration happens via a script that is run automatically when the `csadmin` user does an SSH login to the FortiSOAR VM. When the configuration script completes a UUID is generated for the FortiSOAR VM, this UUID is required for  licensing.
+<details>
+
+> The FortiSOAR VM has been deployed into an Azure Resource Group and needs to be configured. Configuration happens via a script that is run automatically when the `csadmin` user does an SSH login to the FortiSOAR VM. When the configuration script completes a UUID is generated for the FortiSOAR VM, this UUID is required for licensing.
 
 1. Run
     * `ssh csadmin@<ip-address-of-fortisoar-vm>` insert your FortiSOAR IP or run the command below to have the IP pulled from the terraform output
@@ -101,6 +103,29 @@ This workshop uses FortiSOAR, FortiAnalyzer, and FortiGate deployed in Azure. Yo
   ![FortiSOAR Deploy](images/fsr-deploy-07.jpg)
   ![FortiSOAR Deploy](images/fsr-deploy-08.jpg)
 
+  </details>
+
+#### Pre-configured FortiSOAR
+
+<details>
+
+> The FortiSOAR VM has been deployed into an Azure Resource Group already configured. The UUID needs to be retrieved and your license updated.
+
+#### Retrieve the UUID of the FortiSOAR instance
+
+1. Run this Cloud shell command to retieve the UUID
+    * `Get-AzVM -ResourceGroupName ${env:USER}_fortisoar_fortianalyzer_fortigate -Name vm-fsr | %{$_.VmId.Replace("-","")}`
+1. Update the UUID in the license and download
+1. Upload the License to FortiSOAR
+
+  ![FortiSOAR Pre-Configured](images/fsr-pre-config-01.jpg)
+  ![FortiSOAR Pre-Configured](images/fsr-pre-config-02.jpg)
+  ![FortiSOAR Pre-Configured](images/fsr-pre-config-03.jpg)
+  ![FortiSOAR Pre-Configured](images/fsr-pre-config-04.jpg)
+  ![FortiSOAR Pre-Configured](images/fsr-pre-config-05.jpg)
+
+</details>
+
 ### Task 2 Setup FortiAnalyzer / Create API User
 
 #### Activate FortiAnalyzer License / Change Password
@@ -142,6 +167,8 @@ Traffic logs from the FortiGate will be sent to FortiAnalyzer to then be ingeste
 1. Enter FortiAnalyzer - IP address can be found using `terraform output`
 1. Click "Test Connectivity"
     * "Unauthorized" should appear beneath the IP address
+1. Select "Upload option": "Real Time"
+1. Turn off "Verify FortiAnalyzer certificate"
 1. Click "OK"
 1. Re-Edit FortiAnalyzer Fabric Connector
 1. Click "Authorize" in the ***FortiAnalyzer Status*** right-hand pane
@@ -198,7 +225,7 @@ The FortiSOAR FortiAnalyzer connector enables FortiSOAR to ingest FortiAnalyzer 
 1. Click "Confirm" in the Confirm Dialog
 1. Create a Configuration
     * Configuration Name: `Workshop config`
-    * Server URL: `https://<your-faz-ip-address>/` <- make sure you have the trailing slash
+    * Server URL: `https://<your-faz-ip-address>`
     * Username: `apiuser`
     * Password: `SecurityFabric`
     * ADOM Name: `root`
